@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Concepts Master — concepts.selfserved.ai</title>
+  <meta name="description" content="The canonical showcase of AI concepts, sovereign architectures, and prototype systems developed by selfserved.ai.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090b0e;
+      --surface: #12151c;
+      --card: #181d26;
+      --card-hover: #212734;
+      --border: #262c3a;
+      --border-accent: #384257;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-glow: rgba(59, 130, 246, 0.25);
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --purple: #8b5cf6;
+      --cyan: #06b6d4;
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .glow-bg {
+      position: absolute;
+      top: -250px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 500px;
+      background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.15), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 2rem 1.5rem 1rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(59, 130, 246, 0.12);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 750px;
+      margin-bottom: 2rem;
+    }
+
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 280px;
+      padding: 0.85rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pill-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill-btn:hover, .pill-btn.active {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 1.5rem 3rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      background: var(--card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .card-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+    }
+
+    .badge-live {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-concept {
+      background: rgba(139, 92, 246, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .badge-alpha {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+    }
+
+    .card-tags {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .card-link-text {
+      color: #60a5fa;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-weight: 600;
+    }
+
+    footer {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 2.5rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .controls-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      footer {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-bg"></div>
+
+  <header>
+    <div class="nav-bar">
+      <a href="https://concepts.selfserved.ai" class="logo">
+        <span class="logo-dot"></span>
+        concepts.selfserved.ai
+      </a>
+      <div class="nav-links">
+        <a href="https://selfserved.ai" class="nav-link" target="_blank">selfserved.ai</a>
+        <a href="https://central.selfserved.ai" class="nav-link" target="_blank">Central Control</a>
+      </div>
+    </div>
+
+    <div class="badge">Canonical Concepts Master</div>
+    <h1>Concepts, Frameworks & Prototypes</h1>
+    <p class="subtitle">The self-hosted directory of AI architectural blueprints, sovereign personal systems, and specialized venture concepts published under selfserved.ai.</p>
+
+    <div class="controls-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search concepts, tags, or keywords (e.g. agent, risk, solar)...">
+      <div class="filter-pills" id="categoryFilters">
+        <button class="pill-btn active" data-filter="all">All Concepts</button>
+        <button class="pill-btn" data-filter="ai-agents">Autonomous AI</button>
+        <button class="pill-btn" data-filter="infrastructure">Decentralized Edge</button>
+        <button class="pill-btn" data-filter="governance">Risk & Governance</button>
+        <button class="pill-btn" data-filter="publishing">Ventures & Media</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid" id="conceptsGrid">
+      <!-- Meeting Bot -->
+      <a href="https://meetingbot.selfserved.ai" class="card" data-category="ai-agents" target="_blank">
+        <div class="card-top">
+          <div class="card-icon">🎙️</div>
+          <span class="card-badge badge-live">Live Public</span>
+        </div>
+        <div class="card-title">Meeting Bot</div>
+        <div class="card-desc">AI meeting participant that actively drives technical discussions under dedicated Project Manager, Systems Architect, or Engineer personas rather than passively transcribing.</div>
+        <div class="card-tags">
+          <span class="tag">#Multi-Persona</span>
+          <span class="tag">#CloudflareEdge</span>
+          <span class="tag">#LiveAgent</span>
+        </div>
+        <div class="card-footer">
+          <span>meetingbot.selfserved.ai</span>
+          <span class="card-link-text">Launch Site &rarr;</span>
+        </div>
+      </a>
+
+      <!-- Project SUN -->
+      <a href="https://sun.selfserved.ai" class="card" data-category="infrastructure" target="_blank">
+        <div class="card-top">
+          <div class="card-icon">☀️</div>
+          <span class="card-badge badge-live">Live Public</span>
+        </div>
+        <div class="card-title">Project SUN (AI Sustainability)</div>
+        <div class="card-desc">Solar-powered Ubiquitous Neural-mesh: decentralized edge AI compute utilizing stranded rooftop solar capacity and zero-login global edge distribution.</div>
+        <div class="card-tags">
+          <span class="tag">#Decentralized</span>
+          <span class="tag">#GreenCompute</span>
+          <span class="tag">#EdgeAI</span>
+        </div>
+        <div class="card-footer">
+          <span>sun.selfserved.ai</span>
+          <span class="card-link-text">Launch Site &rarr;</span>
+        </div>
+      </a>
+
+      <!-- AIRM -->
+      <a href="https://airm.selfserved.ai" class="card" data-category="governance" target="_blank">
+        <div class="card-top">
+          <div class="card-icon">🛡️</div>
+          <span class="card-badge badge-live">Public Beta</span>
+        </div>
+        <div class="card-title">AIRM — AI Risk Modeling</div>
+        <div class="card-desc">Evidence-based AI risk scoring and continuous telemetry underwriting guide featuring 10-vector risk analysis and FAIR Monte Carlo loss simulation.</div>
+        <div class="card-tags">
+          <span class="tag">#RiskModeling</span>
+          <span class="tag">#Underwriting</span>
+          <span class="tag">#Governance</span>
+        </div>
+        <div class="card-footer">
+          <span>airm.selfserved.ai</span>
+          <span class="card-link-text">Launch Site &rarr;</span>
+        </div>
+      </a>
+
+      <!-- Sovereign Personal AI Stack -->
+      <a href="/sovereign-ai-stack/" class="card" data-category="ai-agents">
+        <div class="card-top">
+          <div class="card-icon">🏛️</div>
+          <span class="card-badge badge-concept">Blueprint</span>
+        </div>
+        <div class="card-title">Sovereign Personal AI Stack</div>
+        <div class="card-desc">The architectural blueprint for running a sovereign, local-first Personal AI Butler and "Company-in-a-Box" on consumer hardware with enterprise-grade governance.</div>
+        <div class="card-tags">
+          <span class="tag">#LocalFirst</span>
+          <span class="tag">#TriHarness</span>
+          <span class="tag">#CompanyInABox</span>
+        </div>
+        <div class="card-footer">
+          <span>/sovereign-ai-stack/</span>
+          <span class="card-link-text">View Blueprint &rarr;</span>
+        </div>
+      </a>
+
+      <!-- Signal / Depth -->
+      <a href="https://signaldb.selfserved.ai" class="card" data-category="ai-agents" target="_blank">
+        <div class="card-top">
+          <div class="card-icon">📡</div>
+          <span class="card-badge badge-alpha">Migration</span>
+        </div>
+        <div class="card-title">Signal / Depth</div>
+        <div class="card-desc">Dynamic AI evaluation engine with authored Markdown questions, web-sourced prompts, and multi-dimensional breadth/depth scoring.</div>
+        <div class="card-tags">
+          <span class="tag">#AIQuiz</span>
+          <span class="tag">#SignalDB</span>
+          <span class="tag">#Scoring</span>
+        </div>
+        <div class="card-footer">
+          <span>signaldb.selfserved.ai</span>
+          <span class="card-link-text">Explore &rarr;</span>
+        </div>
+      </a>
+
+      <!-- Mexo-Ind -->
+      <a href="https://mexo-ind.selfserved.ai" class="card" data-category="publishing" target="_blank">
+        <div class="card-top">
+          <div class="card-icon">🌮</div>
+          <span class="card-badge badge-alpha">Migration</span>
+        </div>
+        <div class="card-title">Mexo-Ind Fusion Flavors</div>
+        <div class="card-desc">Indian flavor systems, fusion recipes, brand identities, and launch playbooks designed specifically for Mexican street food and mobile kitchens.</div>
+        <div class="card-tags">
+          <span class="tag">#FoodTech</span>
+          <span class="tag">#BrandPlaybook</span>
+          <span class="tag">#Fusion</span>
+        </div>
+        <div class="card-footer">
+          <span>mexo-ind.selfserved.ai</span>
+          <span class="card-link-text">Explore &rarr;</span>
+        </div>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <div>&copy; 2026 selfserved.ai &middot; All concepts protected under Rees Co digital enterprise architecture.</div>
+    <div class="footer-links">
+      <a href="https://concepts.selfserved.ai">Concepts Hub</a>
+      <a href="https://selfserved.ai">Company Home</a>
+      <a href="https://central.selfserved.ai">Central Station</a>
+    </div>
+  </footer>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const filterBtns = document.querySelectorAll('.pill-btn');
+    const cards = document.querySelectorAll('.card');
+
+    let currentFilter = 'all';
+
+    function filterCards() {
+      const query = searchInput.value.toLowerCase().trim();
+
+      cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+        const tags = Array.from(card.querySelectorAll('.tag')).map(t => t.textContent.toLowerCase()).join(' ');
+        const category = card.getAttribute('data-category');
+
+        const matchesQuery = !query || title.includes(query) || desc.includes(query) || tags.includes(query);
+        const matchesCategory = currentFilter === 'all' || category === currentFilter;
+
+        if (matchesQuery && matchesCategory) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    searchInput.addEventListener('input', filterCards);
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter');
+        filterCards();
+      });
+    });
+  </script>
+</body>
+</html>
