@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantitative AI Risk Modeling — concepts.selfserved.ai</title>
+  <meta name="description" content="Integrating open-source AI risk frameworks (Promptfoo, DeepEval, ART, AIF360, Evidently) into continuous insurance underwriting, FAIR mathematical loss engines, and policy capping.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090b0e;
+      --surface: #12151c;
+      --card: #181d26;
+      --card-hover: #202632;
+      --border: #262c3a;
+      --border-accent: #384257;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-glow: rgba(59, 130, 246, 0.25);
+      --emerald: #10b981;
+      --purple: #8b5cf6;
+      --amber: #f59e0b;
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+    .glow-bg {
+      position: absolute; top: -250px; left: 50%; transform: translateX(-50%); width: 1000px; height: 500px;
+      background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.2), transparent 70%); pointer-events: none; z-index: 0;
+    }
+    header { max-width: 1100px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem 1rem; position: relative; z-index: 10; }
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+    .logo { font-size: 1.15rem; font-weight: 700; color: #ffffff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+    .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); box-shadow: 0 0 10px var(--purple); }
+    .nav-links { display: flex; gap: 1.25rem; align-items: center; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #ffffff; }
+    .badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3); margin-bottom: 1rem; }
+    h1 { font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .lead { font-size: 1.15rem; color: var(--text-muted); max-width: 850px; margin-bottom: 2.5rem; line-height: 1.6; }
+    main { max-width: 1100px; margin: 0 auto; width: 100%; padding: 0 1.5rem 3rem; flex: 1; position: relative; z-index: 10; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; display: flex; flex-direction: column; transition: all 0.2s ease; }
+    .card:hover { background: var(--card-hover); border-color: var(--border-accent); transform: translateY(-2px); }
+    .card-num { font-family: var(--font-mono); font-size: 0.8rem; color: var(--purple); font-weight: 700; margin-bottom: 0.5rem; }
+    .card-title { font-size: 1.35rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem; }
+    .card-points { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.92rem; color: var(--text-muted); }
+    .card-points li { position: relative; padding-left: 1.25rem; }
+    .card-points li::before { content: '•'; position: absolute; left: 0; color: var(--purple); font-weight: bold; }
+    
+    .table-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 2.5rem; overflow-x: auto; }
+    .table-section h2 { font-size: 1.4rem; color: #ffffff; margin-bottom: 1.25rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left; }
+    th { background: rgba(255, 255, 255, 0.04); color: #cbd5e1; padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); font-weight: 600; }
+    td { padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    
+    .code-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 2.5rem; }
+    .code-box h2 { font-size: 1.4rem; color: #ffffff; margin-bottom: 1rem; }
+    pre { font-family: var(--font-mono); font-size: 0.88rem; color: #cbd5e1; background: #0c0e14; padding: 1.25rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); overflow-x: auto; }
+    
+    .banner-box { background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1)); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 16px; padding: 2rem; margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .banner-title { font-size: 1.35rem; font-weight: 700; color: #ffffff; margin-bottom: 0.4rem; }
+    .banner-desc { color: var(--text-muted); font-size: 0.95rem; max-width: 700px; }
+    .btn-launch { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--primary); color: #ffffff; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 0.95rem; transition: background 0.2s; }
+    .btn-launch:hover { background: #2563eb; }
+
+    footer { max-width: 1100px; margin: 0 auto; width: 100%; padding: 2.5rem 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-muted); }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: #ffffff; }
+  </style>
+</head>
+<body>
+  <div class="glow-bg"></div>
+  <header>
+    <div class="nav-bar">
+      <a href="https://concepts.selfserved.ai" class="logo">
+        <span class="logo-dot"></span>
+        concepts.selfserved.ai
+      </a>
+      <div class="nav-links">
+        <a href="https://concepts.selfserved.ai">&larr; Concepts Master</a>
+        <a href="https://airm.selfserved.ai" target="_blank">AIRM Platform &nearr;</a>
+        <a href="https://central.selfserved.ai" target="_blank">Central Control</a>
+      </div>
+    </div>
+    <div class="badge">Risk &amp; Governance &middot; Actuarial Blueprint</div>
+    <h1>Quantitative AI Risk Modeling</h1>
+    <p class="lead">Integrating open-source AI risk frameworks (Promptfoo, DeepEval, ART, AIF360, Evidently AI) into continuous insurance underwriting, Factor Analysis of Information Risk (FAIR) loss engines, and mathematically sound policy capping.</p>
+  </header>
+
+  <main>
+    <div class="banner-box">
+      <div>
+        <div class="banner-title">Underwriting Engine for AIRM</div>
+        <div class="banner-desc">This architectural blueprint provides the underlying quantitative actuarial methodology, 50,000-iteration Monte Carlo loss model, and CI/CD container telemetry deployed in production at <strong>airm.selfserved.ai</strong>.</div>
+      </div>
+      <a href="https://airm.selfserved.ai" class="btn-launch" target="_blank">Open AIRM Guide &rarr;</a>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-num">SECTION 01</div>
+        <div class="card-title">Continuous Telemetry vs Point-in-Time</div>
+        <ul class="card-points">
+          <li>Shifts from static qualitative cyber questionnaires to dynamic, automated CI/CD and runtime evaluation sidecars.</li>
+          <li>Embeds open-source harnesses into policyholder build pipelines to extract deterministic vulnerability scores.</li>
+          <li>Bridges the market gap between technical vulnerability metrics and carrier solvency reserves.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-num">SECTION 02</div>
+        <div class="card-title">FAIR Parameter Translation</div>
+        <ul class="card-points">
+          <li><strong>Loss Event Frequency (LEF):</strong> Calculated as Threat Event Frequency (TEF) × Vulnerability (V).</li>
+          <li><strong>Vulnerability (V):</strong> Direct failure rate aggregate derived from red-team jailbreaks, evasion rates, and hallucination metrics.</li>
+          <li><strong>Threat Frequency (TEF):</strong> Inferred from production API monitoring, anomalous queries, and untrusted inputs per unit time.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-num">SECTION 03</div>
+        <div class="card-title">Agent Tool Blast-Radius Weighting</div>
+        <ul class="card-points">
+          <li>Calculates Loss Magnitude (LM) weighted by Model Context Protocol (MCP) tool scopes.</li>
+          <li><strong>Primary Loss:</strong> S_tool × Max_Transaction_Limit + Compute_Runaway_Cost + Remediation_Cost.</li>
+          <li><strong>S_tool Blast Radius:</strong> Ranges from 0.05 for read-only sandboxes to 0.95 for arbitrary system execution.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-num">SECTION 04</div>
+        <div class="card-title">Stochastic Monte Carlo & Policy Caps</div>
+        <ul class="card-points">
+          <li>50,000 stochastic Monte Carlo iterations parameterized by Beta-PERT distributions and Lognormal asset loss curves.</li>
+          <li><strong>99.5% Value-at-Risk (VaR):</strong> Establishes maximum baseline loss expectation over annual policy windows.</li>
+          <li><strong>Tail Value-at-Risk (TVaR):</strong> Quantifies catastrophic multi-agent cascading loops to set non-negotiable aggregate liability caps.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <h2>Open-Source Diagnostic Engines Mapped to Risk Vectors</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Risk Vector</th>
+            <th>Open-Source Framework</th>
+            <th>Target Diagnostic Scope</th>
+            <th>Underwriting Telemetry Output</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Prompt Injection &amp; Evasion</strong></td>
+            <td>Promptfoo / DeepEval</td>
+            <td>Multi-turn red-teaming, jailbreak evasion, indirect prompt injection</td>
+            <td>Empirical bypass probability <em>P(Injection)</em> per exposure</td>
+          </tr>
+          <tr>
+            <td><strong>Hallucination &amp; OOD</strong></td>
+            <td>DeepEval / Giskard</td>
+            <td>Faithfulness, context recall, out-of-distribution severity scoring</td>
+            <td>Base error rate <em>P(Hallucination | Query)</em></td>
+          </tr>
+          <tr>
+            <td><strong>Data Poisoning &amp; Evasion</strong></td>
+            <td>IBM ART</td>
+            <td>Clean-label poisoning detection, perturbation bounds (L-inf, L2)</td>
+            <td>Model robustness score and poisoning susceptibility coefficient</td>
+          </tr>
+          <tr>
+            <td><strong>Model Bias &amp; Disparate Impact</strong></td>
+            <td>AI Fairness 360 (AIF360)</td>
+            <td>Demographic parity ratio, equalized odds differences across classes</td>
+            <td>Regulatory compliance index &amp; statutory violation probability</td>
+          </tr>
+          <tr>
+            <td><strong>Model Drift &amp; Distribution Shift</strong></td>
+            <td>Evidently AI</td>
+            <td>Population Stability Index (PSI), Wasserstein distance, embedding drift</td>
+            <td>Drift degradation velocity &amp; model obsolescence half-life</td>
+          </tr>
+          <tr>
+            <td><strong>Model Extraction / IP Theft</strong></td>
+            <td>IBM ART</td>
+            <td>Model inversion vulnerability, membership inference attack resilience</td>
+            <td>IP extraction feasibility score &amp; query budget threshold</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-box">
+      <h2>CI/CD Assessment Container Blueprint</h2>
+      <pre><code># CI/CD Container Evaluation Pipeline
+stages:
+  - adversarial_eval:
+      engine: promptfoo
+      benchmarks: [jailbreak, redteam, indirect_injection]
+      threshold_pass_rate: 0.985
+  - fairness_audit:
+      engine: aif360
+      metrics: [disparate_impact, statistical_parity]
+      acceptable_band: [0.80, 1.25]
+  - drift_calibration:
+      engine: evidently
+      reference_dataset: gold_v1.parquet
+      method: wasserstein
+  - underwriting_ingestion:
+      endpoint: https://api.insurance-cloud.internal/v1/assessments
+      payload: schema_v1_container_report.json</code></pre>
+    </div>
+  </main>
+
+  <footer>
+    <div>&copy; 2026 selfserved.ai &middot; All rights reserved. Underwriting architecture for AIRM.</div>
+    <div>
+      <a href="https://concepts.selfserved.ai">Concepts Master</a> &middot;
+      <a href="https://airm.selfserved.ai">AIRM Platform</a> &middot;
+      <a href="https://central.selfserved.ai">Central Station</a>
+    </div>
+  </footer>
+
+  <script src="/telemetry.js"></script>
+</body>
+</html>
