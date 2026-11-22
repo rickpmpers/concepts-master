@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPUpower — Hardware Telemetry Wallpaper HUD | concepts.selfserved.ai</title>
+  <meta name="description" content="Low-overhead native Linux (GNOME/Wayland) wallpaper telemetry HUD on AMD Ryzen 9 9900X & NVIDIA RTX 5080 with 4-hour trend sparklines.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090b0e;
+      --surface: #11151e;
+      --card: #161c28;
+      --card-border: #232d40;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --cyan: #38bdf8;
+      --emerald: #10b981;
+      --purple: #c084fc;
+      --amber: #fbbf24;
+      --red: #f43f5e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      line-height: 1.6;
+      padding-bottom: 80px;
+    }
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--cyan);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .hero {
+      max-width: 1200px;
+      margin: 60px auto 40px;
+      padding: 0 20px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--cyan);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      max-width: 780px;
+      margin: 0 auto 32px;
+      font-size: 1.15rem;
+      color: var(--text-muted);
+    }
+    .hero-cta {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--cyan);
+      color: #090b0e;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { background: var(--card); }
+    
+    .hud-preview-wrap {
+      max-width: 1200px;
+      margin: 0 auto 60px;
+      padding: 0 20px;
+    }
+    .hud-frame {
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+    .hud-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .hud-grid { grid-template-columns: 1fr; }
+    }
+    .hud-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .hud-card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stat-large {
+      font-size: 2rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 8px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+    }
+    .sparkline-box {
+      margin-top: 16px;
+      background: #0d121c;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 12px;
+      height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .sparkline-title {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+    }
+    .spec-grid {
+      max-width: 1200px;
+      margin: 0 auto 60px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 768px) {
+      .spec-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .spec-card {
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+    .spec-val {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--cyan);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 4px;
+    }
+    .spec-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .deep-dive {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .deep-dive h2 {
+      font-size: 1.8rem;
+      margin: 40px 0 16px;
+    }
+    .deep-dive p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-size: 1.05rem;
+    }
+    code, pre {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    pre {
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 16px 0 24px;
+      font-size: 0.88rem;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="https://concepts.selfserved.ai" class="logo">
+      <span>⚡</span> concepts.selfserved.ai
+    </a>
+    <div class="nav-links">
+      <a href="https://concepts.selfserved.ai">All Concepts</a>
+      <a href="https://selfserved.ai">selfserved.ai</a>
+      <a href="https://github.com/rickpmpers/gpupower" target="_blank">GitHub Repo &rarr;</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="badge">Hardware Telemetry HUD</div>
+    <h1>GPUpower Desktop Wallpaper</h1>
+    <p>A native, ultra-low-overhead Linux desktop wallpaper HUD displaying real-time system performance and rolling 4-hour historical trends for high-performance workstations.</p>
+    <div class="hero-cta">
+      <a href="https://github.com/rickpmpers/gpupower" class="btn btn-primary" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+      <a href="#architecture" class="btn btn-secondary">Architecture Deep-Dive</a>
+    </div>
+  </section>
+
+  <section class="hud-preview-wrap">
+    <div class="hud-frame">
+      <div class="hud-header">
+        <div><span style="color:var(--cyan)">●</span> RAICKUBUGPU2 &bull; LINUX 7.0 &bull; UPTIME: 6D 12H</div>
+        <div style="color:var(--cyan)">REFRESH INTERVAL: 5 MINS</div>
+      </div>
+      <div class="hud-grid">
+        <div class="hud-card">
+          <div class="hud-card-title" style="color:var(--cyan)">
+            <span>⚡</span> CPU PERFORMANCE
+          </div>
+          <div style="font-size:0.8rem;color:var(--cyan);margin-bottom:8px">AMD Ryzen 9 9900X 12-Core</div>
+          <div class="stat-large">1.2%</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:1.2%;background:var(--cyan)"></div>
+          </div>
+          <div class="stat-row">
+            <span>12C / 24T</span>
+            <span>4.4 GHz</span>
+            <span>42.0°C</span>
+          </div>
+          <div class="sparkline-box">
+            <div class="sparkline-title">CPU Utilization (4-Hour Trend)</div>
+            <svg viewBox="0 0 200 40" style="width:100%;height:35px;">
+              <polygon points="0,35 20,32 40,30 60,34 80,28 100,29 120,33 140,25 160,31 180,30 200,32 200,40 0,40" fill="rgba(56,189,248,0.15)"/>
+              <polyline points="0,35 20,32 40,30 60,34 80,28 100,29 120,33 140,25 160,31 180,30 200,32" fill="none" stroke="#38bdf8" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="hud-card">
+          <div class="hud-card-title" style="color:var(--emerald)">
+            <span>🎮</span> GPU TELEMETRY
+          </div>
+          <div style="font-size:0.8rem;color:var(--emerald);margin-bottom:8px">NVIDIA GeForce RTX 5080</div>
+          <div class="stat-large" style="color:var(--emerald)">1.0%</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:1.0%;background:var(--emerald)"></div>
+          </div>
+          <div class="stat-row">
+            <span>VRAM: 1.0 / 16 GB</span>
+            <span>18.9W / 360W</span>
+            <span>37°C</span>
+          </div>
+          <div class="sparkline-box">
+            <div class="sparkline-title">GPU Power Trend (Watts)</div>
+            <svg viewBox="0 0 200 40" style="width:100%;height:35px;">
+              <polygon points="0,36 30,35 60,36 90,34 120,35 150,33 180,36 200,35 200,40 0,40" fill="rgba(16,185,129,0.15)"/>
+              <polyline points="0,36 30,35 60,36 90,34 120,35 150,33 180,36 200,35" fill="none" stroke="#10b981" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="hud-card">
+          <div class="hud-card-title" style="color:var(--purple)">
+            <span>📊</span> MEMORY & STORAGE
+          </div>
+          <div style="font-size:0.8rem;color:var(--purple);margin-bottom:8px">32 GB DDR5 &bull; Gen4 NVMe</div>
+          <div class="stat-large" style="color:var(--purple)">36.1%</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:36.1%;background:var(--purple)"></div>
+          </div>
+          <div class="stat-row">
+            <span>RAM: 10.8 / 29.9 GB</span>
+            <span>NVMe Free: 756 GB</span>
+          </div>
+          <div class="sparkline-box">
+            <div class="sparkline-title">RAM Utilization (4-Hour Trend)</div>
+            <svg viewBox="0 0 200 40" style="width:100%;height:35px;">
+              <polygon points="0,25 30,26 60,24 90,25 120,26 150,25 180,24 200,25 200,40 0,40" fill="rgba(192,132,252,0.15)"/>
+              <polyline points="0,25 30,26 60,24 90,25 120,26 150,25 180,24 200,25" fill="none" stroke="#c084fc" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="spec-grid">
+    <div class="spec-card">
+      <div class="spec-val">0.0001%</div>
+      <div class="spec-label">Effective CPU Duty Cycle</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-val">0 MB</div>
+      <div class="spec-label">Idle Memory Overhead</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-val">412 ms</div>
+      <div class="spec-label">Execution Time per Refresh</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-val">0%</div>
+      <div class="spec-label">GPU Compute Contention</div>
+    </div>
+  </section>
+
+  <section class="deep-dive" id="architecture">
+    <h2>Architecture & Zero-Overhead Design</h2>
+    <p>Traditional desktop monitoring widgets (Electron apps, WebViews, Conky overlays) constantly poll system APIs at 1–60 Hz, competing with local AI model inference for memory and CPU cycles. GPUpower replaces this overhead by decoupling telemetry generation into a headless oneshot Python rasterizer driven by a native user-level systemd timer.</p>
+
+    <h2>Wayland Double-Buffering</h2>
+    <p>GNOME Shell caches wallpaper URIs aggressively to avoid redundant disk reads. To guarantee an immediate repaint without visual artifacts or desktop restarts, GPUpower alternates between two disk targets (<code>wallpaper_0.png</code> and <code>wallpaper_1.png</code>) on each 5-minute cycle, triggering GNOME's GSettings change handler seamlessly.</p>
+
+    <h2>Quickstart Setup</h2>
+    <pre><code># Clone and install the automated 5-minute systemd timer
+git clone https://github.com/rickpmpers/gpupower.git ~/GPUpower
+cd ~/GPUpower
+./setup_service.sh</code></pre>
+  </section>
+</body>
+</html>
