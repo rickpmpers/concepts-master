@@ -159,17 +159,17 @@
       padding: 0.85rem 1.25rem;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 8px;
       color: var(--text);
+      font-family: var(--font-main);
       font-size: 0.95rem;
-      font-family: inherit;
       outline: none;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
     }
 
     .search-input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-glow);
+      box-shadow: 0 0 0 2px var(--primary-glow);
     }
 
     .filter-pills {
@@ -179,56 +179,64 @@
     }
 
     .pill-btn {
-      padding: 0.5rem 1rem;
-      border-radius: 9999px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      background: var(--surface);
+      background: transparent;
       border: 1px solid var(--border);
       color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .pill-btn:hover, .pill-btn.active {
-      background: rgba(59, 130, 246, 0.15);
+    .pill-btn:hover {
+      border-color: var(--border-accent);
+      color: var(--text);
+    }
+
+    .pill-btn.active {
+      background: var(--primary);
       border-color: var(--primary);
       color: #ffffff;
     }
 
     main {
       flex: 1;
+      position: relative;
+      z-index: 10;
       max-width: 1200px;
       margin: 0 auto;
       width: 100%;
       padding: 0 1.5rem 3rem;
     }
 
-    .grid {
+    .concepts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
       gap: 1.5rem;
     }
 
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.75rem;
+      border-radius: 12px;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       text-decoration: none;
       color: inherit;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
     }
 
     .card:hover {
-      background: var(--card-hover);
+      transform: translateY(-2px);
       border-color: var(--border-accent);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+      background: var(--card-hover);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
     .card-top {
@@ -239,105 +247,81 @@
     }
 
     .card-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.35rem;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 1.5rem;
     }
 
     .card-badge {
-      font-size: 0.72rem;
-      font-weight: 700;
+      font-size: 0.7rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      padding: 0.25rem 0.65rem;
-      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
     }
 
     .badge-live {
       background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
+      color: var(--emerald);
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     .badge-concept {
-      background: rgba(139, 92, 246, 0.15);
-      color: #c084fc;
-      border: 1px solid rgba(139, 92, 246, 0.3);
-    }
-
-    .badge-alpha {
-      background: rgba(245, 158, 11, 0.15);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--cyan);
+      border: 1px solid rgba(6, 182, 212, 0.3);
     }
 
     .card-title {
       font-size: 1.25rem;
       font-weight: 700;
+      letter-spacing: -0.02em;
       margin-bottom: 0.5rem;
       color: #ffffff;
-      line-height: 1.3;
     }
 
     .card-desc {
-      font-size: 0.9rem;
       color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 1.25rem;
-      flex-grow: 1;
-    }
-
-    .card-tags {
-      display: flex;
-      gap: 0.4rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.25rem;
-    }
-
-    .tag {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: #94a3b8;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      flex: 1;
     }
 
     .card-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 1rem;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 1rem;
       font-size: 0.8rem;
-      font-family: var(--font-mono);
       color: var(--text-muted);
+      font-family: var(--font-mono);
     }
 
     .card-link-text {
-      color: #60a5fa;
-      display: inline-flex;
+      color: var(--primary);
+      font-weight: 600;
+      display: flex;
       align-items: center;
       gap: 0.25rem;
-      font-weight: 600;
     }
 
     footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 2.5rem 1.5rem;
+      margin-top: auto;
+    }
+
+    .footer-content {
       max-width: 1200px;
       margin: 0 auto;
-      width: 100%;
-      padding: 2.5rem 1.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 1.5rem;
       font-size: 0.85rem;
       color: var(--text-muted);
     }
@@ -354,22 +338,7 @@
     }
 
     .footer-links a:hover {
-      color: #ffffff;
-    }
-
-    @media (max-width: 768px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-      .controls-bar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      footer {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-      }
+      color: var(--text);
     }
   </style>
 </head>
@@ -379,46 +348,41 @@
   <header>
     <div class="nav-bar">
       <a href="https://concepts.selfserved.ai" class="logo">
-        <span class="logo-dot"></span>
+        <div class="logo-dot"></div>
         concepts.selfserved.ai
       </a>
       <div class="nav-links">
-        <a href="https://selfserved.ai" class="nav-link" target="_blank">selfserved.ai</a>
-        <a href="https://central.selfserved.ai" class="nav-link" target="_blank">Central Control</a>
+        <a href="https://selfserved.ai" class="nav-link">selfserved.ai</a>
+        <a href="https://central.selfserved.ai" class="nav-link">Internal Portal</a>
       </div>
     </div>
 
-    <div class="badge">Canonical Concepts Master</div>
-    <h1>Concepts, Frameworks & Prototypes</h1>
-    <p class="subtitle">The self-hosted directory of AI architectural blueprints, sovereign personal systems, and specialized venture concepts published under selfserved.ai.</p>
+    <div class="badge">Innovation &amp; Architecture Lab</div>
+    <h1>Concepts, Frameworks &amp; Prototypes</h1>
+    <p class="subtitle">The canonical showcase of AI concepts, sovereign agent architectures, decentralized infrastructure, and working prototypes developed by selfserved.ai.</p>
 
     <div class="controls-bar">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search concepts, tags, or keywords (e.g. agent, risk, solar)...">
-      <div class="filter-pills" id="categoryFilters">
-        <button class="pill-btn active" data-filter="all">All Concepts</button>
-        <button class="pill-btn" data-filter="ai-agents">Autonomous AI</button>
-        <button class="pill-btn" data-filter="infrastructure">Decentralized Edge</button>
-        <button class="pill-btn" data-filter="governance">Risk & Governance</button>
-        <button class="pill-btn" data-filter="publishing">Ventures & Media</button>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search concepts, frameworks, architectures...">
+      <div class="filter-pills">
+        <button class="pill-btn active" data-filter="all">All</button>
+        <button class="pill-btn" data-filter="ai-agents">AI &amp; Agents</button>
+        <button class="pill-btn" data-filter="infrastructure">Infrastructure</button>
+        <button class="pill-btn" data-filter="governance">Risk &amp; Governance</button>
+        <button class="pill-btn" data-filter="publishing">Food &amp; Lifestyle</button>
       </div>
     </div>
   </header>
 
   <main>
-    <div class="grid" id="conceptsGrid">
+    <div class="concepts-grid">
       <!-- Meeting Bot -->
-      <a href="https://meetingbot.selfserved.ai" class="card" data-category="ai-agents" target="_blank">
+      <a href="https://meetingbot.selfserved.ai" class="card" data-category="ai-agents">
         <div class="card-top">
           <div class="card-icon">🎙️</div>
-          <span class="card-badge badge-live">Live Public</span>
+          <span class="card-badge badge-live">Live Prototype</span>
         </div>
-        <div class="card-title">Meeting Bot</div>
-        <div class="card-desc">AI meeting participant that actively drives technical discussions under dedicated Project Manager, Systems Architect, or Engineer personas rather than passively transcribing.</div>
-        <div class="card-tags">
-          <span class="tag">#Multi-Persona</span>
-          <span class="tag">#CloudflareEdge</span>
-          <span class="tag">#LiveAgent</span>
-        </div>
+        <div class="card-title">Meeting Bot Multi-Persona</div>
+        <div class="card-desc">Autonomous multi-agent meeting listener and live intelligence system operating under PM, Architect, and Engineer personas.</div>
         <div class="card-footer">
           <span>meetingbot.selfserved.ai</span>
           <span class="card-link-text">Launch Site &rarr;</span>
@@ -426,37 +390,27 @@
       </a>
 
       <!-- Project SUN -->
-      <a href="https://sun.selfserved.ai" class="card" data-category="infrastructure" target="_blank">
+      <a href="https://sun.selfserved.ai" class="card" data-category="infrastructure">
         <div class="card-top">
           <div class="card-icon">☀️</div>
-          <span class="card-badge badge-live">Live Public</span>
+          <span class="card-badge badge-concept">Concept &amp; Model</span>
         </div>
-        <div class="card-title">Project SUN (AI Sustainability)</div>
-        <div class="card-desc">Solar-powered Ubiquitous Neural-mesh: decentralized edge AI compute utilizing stranded rooftop solar capacity and zero-login global edge distribution.</div>
-        <div class="card-tags">
-          <span class="tag">#Decentralized</span>
-          <span class="tag">#GreenCompute</span>
-          <span class="tag">#EdgeAI</span>
-        </div>
+        <div class="card-title">Project SUN: Solar AI Mesh</div>
+        <div class="card-desc">Decentralized edge AI compute mesh operating on stranded residential rooftop solar capacity with domestic hot water heat recapture.</div>
         <div class="card-footer">
           <span>sun.selfserved.ai</span>
-          <span class="card-link-text">Launch Site &rarr;</span>
+          <span class="card-link-text">Explore Blueprint &rarr;</span>
         </div>
       </a>
 
-      <!-- AIRM -->
-      <a href="https://airm.selfserved.ai" class="card" data-category="governance" target="_blank">
+      <!-- AIRM Platform -->
+      <a href="https://airm.selfserved.ai" class="card" data-category="governance">
         <div class="card-top">
           <div class="card-icon">🛡️</div>
-          <span class="card-badge badge-live">Public Beta</span>
+          <span class="card-badge badge-live">Live Framework</span>
         </div>
-        <div class="card-title">AIRM — AI Risk Modeling</div>
-        <div class="card-desc">Evidence-based AI risk scoring and continuous telemetry underwriting guide featuring 10-vector risk analysis and FAIR Monte Carlo loss simulation.</div>
-        <div class="card-tags">
-          <span class="tag">#RiskModeling</span>
-          <span class="tag">#Underwriting</span>
-          <span class="tag">#Governance</span>
-        </div>
+        <div class="card-title">AIRM: AI Risk Management</div>
+        <div class="card-desc">Quantitative AI risk modeling, continuous prompt injection diagnostics, dynamic FAIR loss engines, and insurance underwriting methodology.</div>
         <div class="card-footer">
           <span>airm.selfserved.ai</span>
           <span class="card-link-text">Launch Site &rarr;</span>
@@ -470,16 +424,24 @@
           <span class="card-badge badge-concept">Actuarial Blueprint</span>
         </div>
         <div class="card-title">Quantitative AI Risk Modeling</div>
-        <div class="card-desc">Translating dynamic open-source diagnostic telemetry (Promptfoo, DeepEval, ART, AIF360, Evidently) into empirical FAIR distributions, Monte Carlo loss models, and capped policy indemnity limits.</div>
-        <div class="card-tags">
-          <span class="tag">#Actuarial</span>
-          <span class="tag">#FAIRModel</span>
-          <span class="tag">#PolicyCapping</span>
-          <span class="tag">#AIRM</span>
-        </div>
+        <div class="card-desc">Translating dynamic open-source diagnostic telemetry (Promptfoo, DeepEval) into probabilistic dollars-at-risk distributions using Monte Carlo simulation.</div>
         <div class="card-footer">
-          <span>/quantitative-ai-risk-modeling/</span>
-          <span class="card-link-text">Explore Blueprint &rarr;</span>
+          <span>concepts.selfserved.ai/quantitative-ai-risk-modeling</span>
+          <span class="card-link-text">Read Architecture &rarr;</span>
+        </div>
+      </a>
+
+      <!-- GPUpower Desktop Wallpaper HUD -->
+      <a href="/gpupower/" class="card" data-category="infrastructure">
+        <div class="card-top">
+          <div class="card-icon">⚡</div>
+          <span class="card-badge badge-concept">Hardware Telemetry</span>
+        </div>
+        <div class="card-title">GPUpower Desktop HUD</div>
+        <div class="card-desc">Low-overhead Linux (GNOME/Wayland) wallpaper telemetry HUD on AMD Ryzen 9 9900X &amp; NVIDIA RTX 5080 with 4-hour rolling trend sparklines and zero-daemon systemd execution.</div>
+        <div class="card-footer">
+          <span>concepts.selfserved.ai/gpupower</span>
+          <span class="card-link-text">Explore HUD &rarr;</span>
         </div>
       </a>
 
@@ -490,64 +452,51 @@
           <span class="card-badge badge-concept">Blueprint</span>
         </div>
         <div class="card-title">Sovereign Personal AI Stack</div>
-        <div class="card-desc">The architectural blueprint for running a sovereign, local-first Personal AI Butler and "Company-in-a-Box" on consumer hardware with enterprise-grade governance.</div>
-        <div class="card-tags">
-          <span class="tag">#LocalFirst</span>
-          <span class="tag">#TriHarness</span>
-          <span class="tag">#CompanyInABox</span>
-        </div>
+        <div class="card-desc">The architectural blueprint for running a sovereign, local-first Personal AI Butler and "Company-in-a-Box" on consumer hardware with enterprise rigor.</div>
         <div class="card-footer">
-          <span>/sovereign-ai-stack/</span>
-          <span class="card-link-text">View Blueprint &rarr;</span>
+          <span>concepts.selfserved.ai/sovereign-ai-stack</span>
+          <span class="card-link-text">Read Blueprint &rarr;</span>
         </div>
       </a>
 
-      <!-- AI Dynamic Quiz (Signal / Depth) -->
-      <a href="https://signaldb.selfserved.ai" class="card" data-category="ai-agents" target="_blank">
+      <!-- SignalDB / AI Dynamic Quiz -->
+      <a href="https://signaldb.selfserved.ai" class="card" data-category="ai-agents">
         <div class="card-top">
-          <div class="card-icon">📡</div>
-          <span class="card-badge badge-alpha">Quiz</span>
+          <div class="card-icon">🧠</div>
+          <span class="card-badge badge-live">Live Prototype</span>
         </div>
-        <div class="card-title">AI Dynamic Quiz</div>
-        <div class="card-desc">Dynamic AI evaluation engine with authored Markdown questions, web-sourced prompts, and multi-dimensional breadth/depth scoring.</div>
-        <div class="card-tags">
-          <span class="tag">#AIQuiz</span>
-          <span class="tag">#SignalDB</span>
-          <span class="tag">#Scoring</span>
-        </div>
+        <div class="card-title">AI Dynamic Quiz (Signal/Depth)</div>
+        <div class="card-desc">Signal / Depth dynamic AI knowledge assessment platform utilizing authored Markdown questions, real-time web verification, and multidimensional scoring.</div>
         <div class="card-footer">
           <span>signaldb.selfserved.ai</span>
-          <span class="card-link-text">Explore &rarr;</span>
+          <span class="card-link-text">Launch Site &rarr;</span>
         </div>
       </a>
 
-      <!-- Mexo-Ind -->
-      <a href="https://mexo-ind.selfserved.ai" class="card" data-category="publishing" target="_blank">
+      <!-- Mexo-Ind Flavor Systems -->
+      <a href="https://mexo-ind.selfserved.ai" class="card" data-category="publishing">
         <div class="card-top">
           <div class="card-icon">🌮</div>
-          <span class="card-badge badge-alpha">Food</span>
+          <span class="card-badge badge-live">Live Playbook</span>
         </div>
-        <div class="card-title">Mexo-Ind Fusion Flavors</div>
-        <div class="card-desc">Indian flavor systems, fusion recipes, brand identities, and launch playbooks designed specifically for Mexican street food and mobile kitchens.</div>
-        <div class="card-tags">
-          <span class="tag">#FoodTech</span>
-          <span class="tag">#BrandPlaybook</span>
-          <span class="tag">#Fusion</span>
-        </div>
+        <div class="card-title">Mexo-Ind Fusion Systems</div>
+        <div class="card-desc">Indian flavor systems, fusion recipes, brand identities, and commercial launch playbooks designed specifically for Mexican street food and mobile kitchens.</div>
         <div class="card-footer">
           <span>mexo-ind.selfserved.ai</span>
-          <span class="card-link-text">Explore &rarr;</span>
+          <span class="card-link-text">Launch Site &rarr;</span>
         </div>
       </a>
     </div>
   </main>
 
   <footer>
-    <div>&copy; 2026 selfserved.ai &middot; All concepts protected under Rees Co digital enterprise architecture.</div>
-    <div class="footer-links">
-      <a href="https://concepts.selfserved.ai">Concepts Hub</a>
-      <a href="https://selfserved.ai">Company Home</a>
-      <a href="https://central.selfserved.ai">Central Station</a>
+    <div class="footer-content">
+      <div>&copy; 2026 selfserved.ai. Sovereign architectures and concepts.</div>
+      <div class="footer-links">
+        <a href="https://selfserved.ai">selfserved.ai</a>
+        <a href="https://concepts.selfserved.ai">Concepts Master</a>
+        <a href="https://central.selfserved.ai">Internal Central</a>
+      </div>
     </div>
   </footer>
 
