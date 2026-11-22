@@ -3,401 +3,630 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GPUpower — Hardware Telemetry Wallpaper HUD | concepts.selfserved.ai</title>
-  <meta name="description" content="Low-overhead native Linux (GNOME/Wayland) wallpaper telemetry HUD on AMD Ryzen 9 9900X & NVIDIA RTX 5080 with 4-hour trend sparklines.">
+  <title>GPUpower — Hardware & AI Observability Wallpaper HUD | concepts.selfserved.ai</title>
+  <meta name="description" content="Dual-view 30-second flipping desktop wallpaper telemetry HUD on AMD Ryzen 9 9900X & NVIDIA RTX 5080, monitoring multi-harness AI quotas, claude -p prompt daemons, and Grafana observability.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090b0e;
-      --surface: #11151e;
-      --card: #161c28;
-      --card-border: #232d40;
-      --text: #f1f5f9;
+      --bg: #070a0f;
+      --card-bg: #0d121c;
+      --card-border: #1a2333;
+      --accent-cyan: #38bdf8;
+      --accent-green: #10b981;
+      --accent-purple: #c084fc;
+      --accent-orange: #fbbf24;
+      --accent-red: #f43f5e;
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
-      --cyan: #38bdf8;
-      --emerald: #10b981;
-      --purple: #c084fc;
-      --amber: #fbbf24;
-      --red: #f43f5e;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Space Grotesk', -apple-system, sans-serif;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background-color: var(--bg);
-      color: var(--text);
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      color: var(--text-main);
+      font-family: var(--sans);
       line-height: 1.6;
-      padding-bottom: 80px;
+      padding: 0;
+      overflow-x: hidden;
     }
-    nav {
+
+    /* Ambient cyber grid */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-image: radial-gradient(#141c2b 1px, transparent 1px);
+      background-size: 32px 32px;
+      opacity: 0.6;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 24px 20px;
+      padding: 40px 24px;
+    }
+
+    /* Navigation Breadcrumb */
+    .nav-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
       border-bottom: 1px solid var(--card-border);
     }
-    .logo {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--cyan);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .nav-links a {
+    .nav-bar a {
       color: var(--text-muted);
       text-decoration: none;
-      margin-left: 20px;
-      font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--text); }
-    .hero {
-      max-width: 1200px;
-      margin: 60px auto 40px;
-      padding: 0 20px;
-      text-align: center;
-    }
-    .badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      color: var(--cyan);
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-    h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero p {
-      max-width: 780px;
-      margin: 0 auto 32px;
-      font-size: 1.15rem;
-      color: var(--text-muted);
-    }
-    .hero-cta {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 48px;
-    }
-    .btn {
+      font-size: 14px;
+      font-family: var(--mono);
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 24px;
-      border-radius: 8px;
+      transition: color 0.2s;
+    }
+    .nav-bar a:hover { color: var(--accent-cyan); }
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      font-size: 12px;
+      font-family: var(--mono);
       font-weight: 600;
-      font-size: 0.95rem;
-      text-decoration: none;
-      transition: all 0.2s;
     }
-    .btn-primary {
-      background: var(--cyan);
-      color: #090b0e;
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulse 2s infinite;
     }
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-secondary {
-      background: var(--surface);
-      border: 1px solid var(--card-border);
-      color: var(--text);
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
     }
-    .btn-secondary:hover { background: var(--card); }
-    
-    .hud-preview-wrap {
-      max-width: 1200px;
-      margin: 0 auto 60px;
-      padding: 0 20px;
+
+    /* Hero Header */
+    .hero {
+      margin-bottom: 36px;
     }
-    .hud-frame {
-      background: var(--surface);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-    }
-    .hud-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 16px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--card-border);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-    }
-    .hud-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-    @media (max-width: 900px) {
-      .hud-grid { grid-template-columns: 1fr; }
-    }
-    .hud-card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 20px;
-    }
-    .hud-card-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .stat-large {
-      font-size: 2rem;
-      font-weight: 800;
-      font-family: 'JetBrains Mono', monospace;
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent-purple);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
       margin-bottom: 8px;
     }
-    .stat-row {
+    .hero h1 {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
+    }
+    .hero p {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 800px;
+    }
+
+    /* View Switcher Controls */
+    .view-controls {
       display: flex;
       justify-content: space-between;
-      font-size: 0.85rem;
+      align-items: center;
+      margin-bottom: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 16px;
+    }
+    .tab-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
       color: var(--text-muted);
-      margin-top: 8px;
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
     }
-    .progress-bar {
-      height: 8px;
-      background: rgba(255,255,255,0.06);
+    .tab-btn.active {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: var(--accent-cyan);
+      color: var(--text-main);
+      font-weight: 600;
+    }
+    .flip-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent-orange);
+    }
+
+    /* Preview Canvas Wrapper */
+    .preview-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 40px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .hud-mockup {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .hud-panel {
+      background: rgba(10, 14, 22, 0.7);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-main);
+    }
+    .panel-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
       border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 12px;
     }
-    .progress-fill {
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .metric-val {
+      font-family: var(--mono);
+      font-weight: 600;
+    }
+    .bar-track {
+      width: 100%;
+      height: 7px;
+      background: #1c2434;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .bar-fill {
       height: 100%;
       border-radius: 4px;
     }
-    .sparkline-box {
-      margin-top: 16px;
-      background: #0d121c;
-      border: 1px solid var(--card-border);
-      border-radius: 6px;
-      padding: 12px;
-      height: 90px;
+
+    .daemon-item {
       display: flex;
-      flex-direction: column;
       justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 12px;
     }
-    .sparkline-title {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      font-family: 'JetBrains Mono', monospace;
-      text-transform: uppercase;
+    .daemon-name { font-weight: 600; color: var(--text-main); }
+    .daemon-sub { font-size: 10px; color: var(--text-dim); font-family: var(--mono); }
+    .daemon-pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
     }
-    .spec-grid {
-      max-width: 1200px;
-      margin: 0 auto 60px;
-      padding: 0 20px;
+
+    /* Specs Grid */
+    .specs-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 16px;
-    }
-    @media (max-width: 768px) {
-      .spec-grid { grid-template-columns: repeat(2, 1fr); }
+      margin-bottom: 40px;
     }
     .spec-card {
-      background: var(--surface);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 20px;
-      text-align: center;
     }
-    .spec-val {
-      font-size: 1.6rem;
+    .spec-card h3 {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      margin-bottom: 8px;
+    }
+    .spec-card .val {
+      font-size: 24px;
       font-weight: 700;
-      color: var(--cyan);
-      font-family: 'JetBrains Mono', monospace;
-      margin-bottom: 4px;
+      color: var(--text-main);
+      font-family: var(--mono);
     }
-    .spec-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
+    .spec-card .desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 4px;
     }
-    .deep-dive {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-    .deep-dive h2 {
-      font-size: 1.8rem;
-      margin: 40px 0 16px;
-    }
-    .deep-dive p {
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      font-size: 1.05rem;
-    }
-    code, pre {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    pre {
-      background: var(--surface);
+
+    /* Code Snippet */
+    .code-box {
+      background: #05080d;
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 16px;
+      border-radius: 12px;
+      padding: 20px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent-cyan);
       overflow-x: auto;
-      margin: 16px 0 24px;
-      font-size: 0.88rem;
-      color: #38bdf8;
+      margin-bottom: 40px;
     }
+    .code-comment { color: var(--text-dim); }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding-top: 24px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+      font-family: var(--mono);
+    }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--accent-cyan); }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="https://concepts.selfserved.ai" class="logo">
-      <span>⚡</span> concepts.selfserved.ai
-    </a>
-    <div class="nav-links">
-      <a href="https://concepts.selfserved.ai">All Concepts</a>
-      <a href="https://selfserved.ai">selfserved.ai</a>
-      <a href="https://github.com/rickpmpers/gpupower" target="_blank">GitHub Repo &rarr;</a>
-    </div>
-  </nav>
-
-  <section class="hero">
-    <div class="badge">Hardware Telemetry HUD</div>
-    <h1>GPUpower Desktop Wallpaper</h1>
-    <p>A native, ultra-low-overhead Linux desktop wallpaper HUD displaying real-time system performance and rolling 4-hour historical trends for high-performance workstations.</p>
-    <div class="hero-cta">
-      <a href="https://github.com/rickpmpers/gpupower" class="btn btn-primary" target="_blank">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        View on GitHub
-      </a>
-      <a href="#architecture" class="btn btn-secondary">Architecture Deep-Dive</a>
-    </div>
-  </section>
-
-  <section class="hud-preview-wrap">
-    <div class="hud-frame">
-      <div class="hud-header">
-        <div><span style="color:var(--cyan)">●</span> RAICKUBUGPU2 &bull; LINUX 7.0 &bull; UPTIME: 6D 12H</div>
-        <div style="color:var(--cyan)">REFRESH INTERVAL: 5 MINS</div>
-      </div>
-      <div class="hud-grid">
-        <div class="hud-card">
-          <div class="hud-card-title" style="color:var(--cyan)">
-            <span>⚡</span> CPU PERFORMANCE
-          </div>
-          <div style="font-size:0.8rem;color:var(--cyan);margin-bottom:8px">AMD Ryzen 9 9900X 12-Core</div>
-          <div class="stat-large">1.2%</div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:1.2%;background:var(--cyan)"></div>
-          </div>
-          <div class="stat-row">
-            <span>12C / 24T</span>
-            <span>4.4 GHz</span>
-            <span>42.0°C</span>
-          </div>
-          <div class="sparkline-box">
-            <div class="sparkline-title">CPU Utilization (4-Hour Trend)</div>
-            <svg viewBox="0 0 200 40" style="width:100%;height:35px;">
-              <polygon points="0,35 20,32 40,30 60,34 80,28 100,29 120,33 140,25 160,31 180,30 200,32 200,40 0,40" fill="rgba(56,189,248,0.15)"/>
-              <polyline points="0,35 20,32 40,30 60,34 80,28 100,29 120,33 140,25 160,31 180,30 200,32" fill="none" stroke="#38bdf8" stroke-width="2"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="hud-card">
-          <div class="hud-card-title" style="color:var(--emerald)">
-            <span>🎮</span> GPU TELEMETRY
-          </div>
-          <div style="font-size:0.8rem;color:var(--emerald);margin-bottom:8px">NVIDIA GeForce RTX 5080</div>
-          <div class="stat-large" style="color:var(--emerald)">1.0%</div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:1.0%;background:var(--emerald)"></div>
-          </div>
-          <div class="stat-row">
-            <span>VRAM: 1.0 / 16 GB</span>
-            <span>18.9W / 360W</span>
-            <span>37°C</span>
-          </div>
-          <div class="sparkline-box">
-            <div class="sparkline-title">GPU Power Trend (Watts)</div>
-            <svg viewBox="0 0 200 40" style="width:100%;height:35px;">
-              <polygon points="0,36 30,35 60,36 90,34 120,35 150,33 180,36 200,35 200,40 0,40" fill="rgba(16,185,129,0.15)"/>
-              <polyline points="0,36 30,35 60,36 90,34 120,35 150,33 180,36 200,35" fill="none" stroke="#10b981" stroke-width="2"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="hud-card">
-          <div class="hud-card-title" style="color:var(--purple)">
-            <span>📊</span> MEMORY & STORAGE
-          </div>
-          <div style="font-size:0.8rem;color:var(--purple);margin-bottom:8px">32 GB DDR5 &bull; Gen4 NVMe</div>
-          <div class="stat-large" style="color:var(--purple)">36.1%</div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:36.1%;background:var(--purple)"></div>
-          </div>
-          <div class="stat-row">
-            <span>RAM: 10.8 / 29.9 GB</span>
-            <span>NVMe Free: 756 GB</span>
-          </div>
-          <div class="sparkline-box">
-            <div class="sparkline-title">RAM Utilization (4-Hour Trend)</div>
-            <svg viewBox="0 0 200 40" style="width:100%;height:35px;">
-              <polygon points="0,25 30,26 60,24 90,25 120,26 150,25 180,24 200,25 200,40 0,40" fill="rgba(192,132,252,0.15)"/>
-              <polyline points="0,25 30,26 60,24 90,25 120,26 150,25 180,24 200,25" fill="none" stroke="#c084fc" stroke-width="2"/>
-            </svg>
-          </div>
-        </div>
+  <div class="container">
+    <div class="nav-bar">
+      <a href="https://concepts.selfserved.ai/">← Back to Concepts Portal</a>
+      <div class="badge-live">
+        <span class="pulse-dot"></span> 30s Visual Flip Active
       </div>
     </div>
-  </section>
 
-  <section class="spec-grid">
-    <div class="spec-card">
-      <div class="spec-val">0.0001%</div>
-      <div class="spec-label">Effective CPU Duty Cycle</div>
+    <div class="hero">
+      <div class="hero-tag">Dual-View Desktop HUD • Linux & macOS Fleet</div>
+      <h1>GPUpower Performance & AI HUD</h1>
+      <p>A zero-overhead native telemetry wallpaper engine designed for AMD Ryzen 9 9900X & NVIDIA RTX 5080 rigs, featuring 30-second visual flipping between hardware compute graphs and multi-harness AI quotas, claude -p prompt runners, and Grafana observability.</p>
     </div>
-    <div class="spec-card">
-      <div class="spec-val">0 MB</div>
-      <div class="spec-label">Idle Memory Overhead</div>
-    </div>
-    <div class="spec-card">
-      <div class="spec-val">412 ms</div>
-      <div class="spec-label">Execution Time per Refresh</div>
-    </div>
-    <div class="spec-card">
-      <div class="spec-val">0%</div>
-      <div class="spec-label">GPU Compute Contention</div>
-    </div>
-  </section>
 
-  <section class="deep-dive" id="architecture">
-    <h2>Architecture & Zero-Overhead Design</h2>
-    <p>Traditional desktop monitoring widgets (Electron apps, WebViews, Conky overlays) constantly poll system APIs at 1–60 Hz, competing with local AI model inference for memory and CPU cycles. GPUpower replaces this overhead by decoupling telemetry generation into a headless oneshot Python rasterizer driven by a native user-level systemd timer.</p>
+    <!-- View Switcher -->
+    <div class="view-controls">
+      <div class="tab-buttons">
+        <button class="tab-btn active" id="btn-view1" onclick="switchView(1)">
+          🖥️ View 1: Hardware Core HUD
+        </button>
+        <button class="tab-btn" id="btn-view2" onclick="switchView(2)">
+          ⚡ View 2: AI Workloads & Daemons
+        </button>
+      </div>
+      <div class="flip-status">
+        <span>⏱️ Auto-Flipping Cadence: 30 Seconds</span>
+      </div>
+    </div>
 
-    <h2>Wayland Double-Buffering</h2>
-    <p>GNOME Shell caches wallpaper URIs aggressively to avoid redundant disk reads. To guarantee an immediate repaint without visual artifacts or desktop restarts, GPUpower alternates between two disk targets (<code>wallpaper_0.png</code> and <code>wallpaper_1.png</code>) on each 5-minute cycle, triggering GNOME's GSettings change handler seamlessly.</p>
+    <!-- Interactive Mockup Preview -->
+    <div class="preview-card">
+      <!-- VIEW 1 MOCKUP -->
+      <div id="view1-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="font-family:var(--mono); font-size:12px; color:var(--text-muted);">
+            HOST: <strong style="color:var(--text-main);">RAICKUBUGPU2</strong> • KERNEL 7.0 LINUX (GNOME/WAYLAND)
+          </div>
+          <div style="font-family:var(--mono); font-size:12px; color:var(--accent-cyan);">
+            VIEW 1/2 • HARDWARE HUD
+          </div>
+        </div>
 
-    <h2>Quickstart Setup</h2>
-    <pre><code># Clone and install the automated 5-minute systemd timer
-git clone https://github.com/rickpmpers/gpupower.git ~/GPUpower
-cd ~/GPUpower
-./setup_service.sh</code></pre>
-  </section>
+        <div class="hud-mockup">
+          <!-- CPU Card -->
+          <div class="hud-panel">
+            <div class="panel-head">
+              <span class="panel-title">CPU • RYZEN 9 9900X</span>
+              <span class="panel-tag" style="background:rgba(56,189,248,0.1); color:var(--accent-cyan); border:1px solid var(--accent-cyan);">12C / 24T</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Total Utilization</span>
+              <span class="metric-val" style="color:var(--accent-cyan);">24.8%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:25%; background:var(--accent-cyan);"></div>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Package Temp / Clock</span>
+              <span class="metric-val">46.5°C • 5.14 GHz</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">24-Thread Heatmap</span>
+              <span class="metric-val" style="color:var(--accent-cyan);">T0–T23 Active</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">4-Hour Load Trend</span>
+              <span class="metric-val" style="color:var(--accent-cyan);">Stable 1.25 Load</span>
+            </div>
+          </div>
+
+          <!-- GPU Card -->
+          <div class="hud-panel">
+            <div class="panel-head">
+              <span class="panel-title">GPU • GEFORCE RTX 5080</span>
+              <span class="panel-tag" style="background:rgba(16,185,129,0.1); color:var(--accent-green); border:1px solid var(--accent-green);">16GB GDDR7</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Core Utilization</span>
+              <span class="metric-val" style="color:var(--accent-green);">38.0%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:38%; background:var(--accent-green);"></div>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">VRAM Allocated</span>
+              <span class="metric-val" style="color:var(--accent-green);">9.8 / 16.0 GB (61%)</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Thermal & Wattage</span>
+              <span class="metric-val">48°C • 124W / 360W</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Compute Process</span>
+              <span class="metric-val" style="color:var(--text-main);">llama-server-vulkan</span>
+            </div>
+          </div>
+
+          <!-- Memory & Drive -->
+          <div class="hud-panel">
+            <div class="panel-head">
+              <span class="panel-title">SYSTEM MEMORY & I/O</span>
+              <span class="panel-tag" style="background:rgba(192,132,252,0.1); color:var(--accent-purple); border:1px solid var(--accent-purple);">64GB DDR5</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">RAM Utilization</span>
+              <span class="metric-val" style="color:var(--accent-purple);">31.2 GB / 62.6 GB</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:50%; background:var(--accent-purple);"></div>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">NVMe Root Drive (/)</span>
+              <span class="metric-val" style="color:var(--accent-orange);">1.2 TB Free (34% Used)</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Network Throughput</span>
+              <span class="metric-val">RX: 14.2 MB/s • TX: 2.1 MB/s</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">4-Hour RAM Sparkline</span>
+              <span class="metric-val" style="color:var(--accent-purple);">Smooth Buffer</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2 MOCKUP -->
+      <div id="view2-content" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="font-family:var(--mono); font-size:12px; color:var(--text-muted);">
+            FLEET: <strong style="color:var(--text-main);">GPUpower RIG + MACBOOK (LAN)</strong> • GRAFANA (MONITOR.SELFSERVED.AI)
+          </div>
+          <div style="font-family:var(--mono); font-size:12px; color:var(--accent-orange);">
+            VIEW 2/2 • AI WORKLOADS & DAEMONS
+          </div>
+        </div>
+
+        <div class="hud-mockup">
+          <!-- Multi-Harness AI Quotas -->
+          <div class="hud-panel">
+            <div class="panel-head">
+              <span class="panel-title">MULTI-HARNESS AI QUOTAS</span>
+              <span class="panel-tag" style="background:rgba(192,132,252,0.1); color:var(--accent-purple); border:1px solid var(--accent-purple);">FINOPS</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Claude 5-Hour Quota</span>
+              <span class="metric-val" style="color:var(--accent-cyan);">26% • Reset in 2h 46m</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:26%; background:var(--accent-green);"></div>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Claude 7-Day Quota</span>
+              <span class="metric-val" style="color:var(--accent-cyan);">26% • Reset in 5.4d</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:26%; background:var(--accent-green);"></div>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Claude 30d Volume</span>
+              <span class="metric-val" style="color:var(--text-main);">3.39B Tokens (Sonnet 5.5)</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Antigravity / Gemini</span>
+              <span class="metric-val" style="color:var(--accent-orange);">55,775+ Steps</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Venice Plan Credits</span>
+              <span class="metric-val" style="color:var(--accent-green);">59.4% Remaining</span>
+            </div>
+          </div>
+
+          <!-- Headless Prompt Daemons -->
+          <div class="hud-panel">
+            <div class="panel-head">
+              <span class="panel-title">HEADLESS AI DAEMONS</span>
+              <span class="panel-tag" style="background:rgba(56,189,248,0.1); color:var(--accent-cyan); border:1px solid var(--accent-cyan);">CLAUDE -P</span>
+            </div>
+            <div class="daemon-item">
+              <div>
+                <div class="daemon-name">cross-harness-review</div>
+                <div class="daemon-sub">codex -> claude -p -> agy</div>
+              </div>
+              <span class="daemon-pill" style="background:rgba(16,185,129,0.1); color:var(--accent-green);">180s ACTIVE</span>
+            </div>
+            <div class="daemon-item">
+              <div>
+                <div class="daemon-name">email-processor</div>
+                <div class="daemon-sub">INBOX autonomous responder</div>
+              </div>
+              <span class="daemon-pill" style="background:rgba(56,189,248,0.1); color:var(--accent-cyan);">PID 23192</span>
+            </div>
+            <div class="daemon-item">
+              <div>
+                <div class="daemon-name">whatsapp-digest</div>
+                <div class="daemon-sub">claude -p compact briefing</div>
+              </div>
+              <span class="daemon-pill" style="background:rgba(16,185,129,0.1); color:var(--accent-green);">07:00 DAILY</span>
+            </div>
+            <div class="daemon-item">
+              <div>
+                <div class="daemon-name">handoff-watcher</div>
+                <div class="daemon-sub">headless claude prompt dispatcher</div>
+              </div>
+              <span class="daemon-pill" style="background:rgba(56,189,248,0.1); color:var(--accent-cyan);">WATCHING</span>
+            </div>
+            <div class="daemon-item">
+              <div>
+                <div class="daemon-name">claude-effort-audit</div>
+                <div class="daemon-sub">effort token & cost optimizer</div>
+              </div>
+              <span class="daemon-pill" style="background:rgba(16,185,129,0.1); color:var(--accent-green);">MON 08:00</span>
+            </div>
+          </div>
+
+          <!-- LaunchAgents Fleet & Grafana -->
+          <div class="hud-panel">
+            <div class="panel-head">
+              <span class="panel-title">FLEET & OBSERVABILITY</span>
+              <span class="panel-tag" style="background:rgba(16,185,129,0.1); color:var(--accent-green); border:1px solid var(--accent-green);">ONLINE</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">macOS LaunchAgents</span>
+              <span class="metric-val" style="color:var(--accent-cyan);">35 Active / 69 Total</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Grafana OSS (monitor)</span>
+              <span class="metric-val" style="color:var(--accent-green);">v11.1.0 ONLINE</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">VictoriaMetrics TSDB</span>
+              <span class="metric-val" style="color:var(--accent-green);">417 Active Metrics</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Grafana Loki Aggregator</span>
+              <span class="metric-val" style="color:var(--accent-green);">READY (Vector Sinks)</span>
+            </div>
+            <div class="metric-row">
+              <span style="color:var(--text-muted);">Local GPU Mini-Telemetry</span>
+              <span class="metric-val" style="color:var(--text-main);">RTX 5080 (38% • 124W)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Specifications Grid -->
+    <div class="specs-grid">
+      <div class="spec-card">
+        <h3>FLIP CADENCE</h3>
+        <div class="val" style="color:var(--accent-orange);">30 SECONDS</div>
+        <div class="desc">Seamlessly alternates between Hardware graphs and AI workloads.</div>
+      </div>
+      <div class="spec-card">
+        <h3>EXECUTION OVERHEAD</h3>
+        <div class="val" style="color:var(--accent-green);">~50 ms</div>
+        <div class="desc">Sub-60ms cache hit rendering. 0.001% effective CPU duty cycle.</div>
+      </div>
+      <div class="spec-card">
+        <h3>PERSISTENT MEMORY</h3>
+        <div class="val" style="color:var(--accent-cyan);">0 MB RAM</div>
+        <div class="desc">Native oneshot systemd user unit exits cleanly between triggers.</div>
+      </div>
+      <div class="spec-card">
+        <h3>OBSERVABILITY CLUSTER</h3>
+        <div class="val" style="color:var(--accent-purple);">GRAFANA 11</div>
+        <div class="desc">Fed by VictoriaMetrics (:8428), Loki (:3100), and FinOps logs.</div>
+      </div>
+    </div>
+
+    <!-- Quick Start CLI -->
+    <div class="code-box">
+<span class="code-comment"># Force Hardware HUD View</span>
+$ python3 /home/raick/GPUpower/dashboard_wallpaper.py --once --view hardware
+
+<span class="code-comment"># Force AI Operations & LaunchDaemons HUD View</span>
+$ python3 /home/raick/GPUpower/dashboard_wallpaper.py --once --view ai
+
+<span class="code-comment"># Check active 30-second systemd timer</span>
+$ systemctl --user list-timers gpupower-dashboard.timer
+    </div>
+
+    <footer>
+      GPUpower Open Project • Publicized on <a href="https://concepts.selfserved.ai/">concepts.selfserved.ai</a> • GitHub: <a href="https://github.com/rickpmpers/gpupower">rickpmpers/gpupower</a>
+    </footer>
+  </div>
+
+  <script>
+    function switchView(viewNum) {
+      const v1 = document.getElementById('view1-content');
+      const v2 = document.getElementById('view2-content');
+      const b1 = document.getElementById('btn-view1');
+      const b2 = document.getElementById('btn-view2');
+
+      if (viewNum === 1) {
+        v1.style.display = 'block';
+        v2.style.display = 'none';
+        b1.classList.add('active');
+        b2.classList.remove('active');
+      } else {
+        v1.style.display = 'none';
+        v2.style.display = 'block';
+        b2.classList.add('active');
+        b1.classList.remove('active');
+      }
+    }
+
+    // Auto-flip simulation in the browser every 30 seconds
+    let currentTab = 1;
+    setInterval(() => {
+      currentTab = currentTab === 1 ? 2 : 1;
+      switchView(currentTab);
+    }, 30000);
+  </script>
 </body>
 </html>
