@@ -14,6 +14,7 @@ The canonical self-hosted showcase and directory for public concepts under `self
 
 1. **[Quantitative AI Risk Modeling](quantitative-ai-risk-modeling/)**: Open-source diagnostic telemetry, FAIR loss engine, 50,000-iteration Monte Carlo Beta-PERT distributions, and capped policy limits powering the [AIRM](https://airm.selfserved.ai) platform.
 2. **[Sovereign Personal AI Stack](sovereign-ai-stack/)**: Local autonomous agent harness blueprint.
+3. **[GPUpower Telemetry Wallpaper HUD](gpupower/)**: Low-overhead native Linux (GNOME/Wayland) wallpaper telemetry HUD on AMD Ryzen 9 9900X & NVIDIA RTX 5080 with 4-hour rolling trend sparklines, thread heatmaps, and zero-overhead systemd timer execution. Source on [GitHub](https://github.com/rickpmpers/gpupower).
 
 ## Canonical Concept Mappings (External Showcases)
 - **[Project SUN](https://sun.selfserved.ai)**: Decentralized solar-powered edge AI mesh with multi-family domestic hot water thermal recapture.
@@ -21,4 +22,3 @@ The canonical self-hosted showcase and directory for public concepts under `self
 - **[AIRM](https://airm.selfserved.ai)**: Evidence-based AI risk scoring and closed-loop insurance underwriting guide.
 - **[AI Dynamic Quiz](https://signaldb.selfserved.ai)**: Dynamic AI evaluation engine with authored Markdown questions, web-sourced prompts, and multi-dimensional breadth/depth scoring.
 - **[Mexo-Ind](https://mexo-ind.selfserved.ai)**: Indian flavor systems, fusion recipes, brand identities, and launch playbooks designed specifically for Mexican street food and mobile kitchens.
-
