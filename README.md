@@ -22,3 +22,4 @@ The canonical self-hosted showcase and directory for public concepts under `self
 - **[AIRM](https://airm.selfserved.ai)**: Evidence-based AI risk scoring and closed-loop insurance underwriting guide.
 - **[AI Dynamic Quiz](https://signaldb.selfserved.ai)**: Dynamic AI evaluation engine with authored Markdown questions, web-sourced prompts, and multi-dimensional breadth/depth scoring.
 - **[Mexo-Ind](https://mexo-ind.selfserved.ai)**: Indian flavor systems, fusion recipes, brand identities, and launch playbooks designed specifically for Mexican street food and mobile kitchens.
+- **[rAIck](https://raick.selfserved.ai)**: Rick's digital AI clone: two years of training, joins meetings, own phone number, 127 agents, 2 knowledge bases.
